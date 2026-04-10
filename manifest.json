@@ -2,7 +2,7 @@
   "name": "Hunter Lab Brasil — MHW Iceborne",
   "short_name": "Hunter Lab",
   "description": "Criador de builds para Monster Hunter World: Iceborne",
-  "start_url": "./index.html",
+  "start_url": ".",
   "display": "standalone",
   "background_color": "#1a160f",
   "theme_color": "#c9a84c",
