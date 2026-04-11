@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Hunter Lab">
+    <meta name="theme-color" content="#c9a84c">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <title>Hunter Lab Brasil — MHW Iceborne</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
+
+        /* ── Scrollbar ─────────────────────────────────── */
+        ::-webkit-scrollbar { height: 8px; width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #6b5e43; border-radius: 10px; }
+        ::-webkit-scrollbar-track { background: #1a160f; }
+
+        /* ── Inputs & Selects ──────────────────────────── */
+        select { color-scheme: dark; }
+        select option { background-color: #252016 !important; color: #d9b85c; font-weight: bold; }
+        input, select {
+            background: #252016; border: 1px solid #4a412f; color: #d9b85c;
+            font-size: 16px; font-family: 'Crimson Text', serif;
+            padding: 0 12px; border-radius: 4px; width: 100%;
+            outline: none; transition: border-color 0.2s;
+        }
+        input:focus, select:focus { border-color: #c9a84c; }
+        input[type=number] { font-family: 'Cinzel', serif; font-weight: 700; }
+        label {
+            font-size: 13px; font-weight: 700; color: #c9b07a;
+            text-transform: uppercase; margin-bottom: 5px;
+            display: block; letter-spacing: 2px; font-family: 'Cinzel', serif;
+        }
+        /* Remove setas numéricas */
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none !important; margin: 0 !important; }
+        input[type="number"] { -moz-appearance: textfield !important; appearance: textfield !important; }
+
+        /* ── Tipografia / Base ─────────────────────────── */
+        body { background: #1a160f; color: #c9b07a; font-family: 'Crimson Text', Georgia, serif; min-height: 100vh; }
+        .font-cinzel  { font-family: 'Cinzel', serif; }
+        .font-crimson { font-family: 'Crimson Text', serif; }
+
+        /* ── Header ────────────────────────────────────── */
+        .header-ice {
+            background: linear-gradient(180deg, #3d3423 0%, #1a160f 100%);
+            border-bottom: 1px solid #c9b07a; position: relative;
+        }
+        .header-ice::before {
+            content: ''; position: absolute; bottom: -1px; left: 0; right: 0;
+            height: 1px; background: linear-gradient(90deg, transparent, #e8d5a3, transparent);
+        }
+        .logo-title {
+            font-family: 'Cinzel', serif; font-size: clamp(22px, 5vw, 34px);
+            font-weight: 700; color: #e8d5a3; letter-spacing: 2px;
+            text-shadow: 0 0 15px #c9a84c;
+        }
+        .logo-title span { color: #d9b85c; }
+        .logo-sub { font-family: 'Crimson Text', serif; font-size: 13px; letter-spacing: 4px; color: #d9b85c; text-transform: uppercase; font-weight: 600; }
+
+        /* ── Botões de navegação ────────────────────────── */
+        .nav-btn {
+            background: transparent; border: 1px solid #6b5e43; color: #d9b85c;
+            font-family: 'Cinzel', serif; font-size: 14px; font-weight: 700;
+            letter-spacing: 1px; padding: 0 16px; cursor: pointer;
+            text-transform: uppercase; transition: all 0.2s; border-radius: 4px;
+            display: flex; align-items: center; justify-content: center; white-space: nowrap;
+        }
+        .nav-btn:hover  { border-color: #e8d5a3; color: #e8d5a3; background: #2a251b; }
+        .nav-btn.active { border-color: #e8d5a3; color: #e8d5a3; background: #383124; box-shadow: 0 0 10px rgba(232,213,163,0.3); }
+
+        /* ── Pips de habilidade (estilo MHW — quadradinhos) ── */
+        /* .pip antigo removido — use .skill-pip, .pip-active, .pip-maxed, .pip-empty */
+
+        /* ── Raridades ──────────────────────────────────── */
+        .rarity-1  { color: #9ca3af !important; }
+        .rarity-2  { color: #e2e8f0 !important; }
+        .rarity-3  { color: #86efac !important; }
+        .rarity-4  { color: #4ade80 !important; }
+        .rarity-5  { color: #fbbf24 !important; }
+        .rarity-6  { color: #f97316 !important; }
+        .rarity-7  { color: #ef4444 !important; }
+        .rarity-8  { color: #c084fc !important; }
+        .rarity-9  { color: #60a5fa !important; }
+        .rarity-10 { color: #34d399 !important; }
+        .rarity-11 { color: #e8d5a3 !important; }
+        .rarity-12 { color: #cffafe !important; text-shadow: 0 0 6px rgba(207,250,254,0.5); }
+
+        /* ── Painéis ────────────────────────────────────── */
+        .panel-title {
+            font-family: 'Cinzel', serif; font-size: clamp(15px,2.5vw,20px);
+            letter-spacing: 3px; color: #d9b85c; text-transform: uppercase;
+            border-bottom: 1px solid #4a412f; padding-bottom: 10px;
+            display: flex; align-items: center; gap: 10px; font-weight: 700;
+        }
+        /* panel-title::before removido — ícones SVG substituem o marcador */
+        .panel-title img, .panel-title span { flex-shrink: 0; }
+
+        .divider-gold { border: none; border-top: 1px solid #6b5e43; margin: 20px 0; position: relative; }
+        .divider-gold::after { content: '✦✦✦'; position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: #1a160f; padding: 0 12px; color: #6b5e43; font-size: 16px; letter-spacing: 5px; }
+
+        .equip-icon-svg {
+            flex-shrink: 0; display: inline-flex;
+            align-items: center; justify-content: center;
+        }
+        .equip-icon-svg svg { display: block; filter: drop-shadow(0 0 3px rgba(0,0,0,.6)); }
+        .equip-icon { border: 1px solid #6b5e43; background: #2a251b; padding: 5px; border-radius: 4px; box-shadow: inset 0 0 5px #1a160f; object-fit: contain; }
+
+        /* ── Cards de stat ──────────────────────────────── */
+        .stat-card       { background: #252016; padding: 14px; border: 1px solid #6b5e43; }
+        .stat-label      { font-family: 'Cinzel', serif; font-size: 13px; color: #c9b07a; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; }
+        .stat-breakdown  { font-size: 15px; color: #d9b85c; margin-top: 10px; border-top: 1px solid #4a412f; padding-top: 10px; }
+        .stat-breakdown div { display: flex; justify-content: space-between; margin-bottom: 4px; }
+
+        /* ── Mobile: bottom nav ─────────────────────────── */
+        .mobile-nav {
+            position: fixed; bottom: 0; left: 0; right: 0; z-index: 40;
+            background: #1a160f; border-top: 1px solid #4a412f;
+            display: none; padding: 8px 16px; padding-bottom: max(8px, env(safe-area-inset-bottom));
+            gap: 8px;
+        }
+        @media (max-width: 1023px) {
+            .mobile-nav { display: flex; }
+            body { padding-bottom: 70px; }
+        }
+        .mobile-nav-btn {
+            flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            gap: 3px; padding: 6px 4px; border-radius: 6px; cursor: pointer;
+            border: 1px solid transparent; transition: all 0.2s; font-family: 'Cinzel', serif;
+            font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #6b5e43;
+        }
+        .mobile-nav-btn.active { border-color: #c9a84c; background: #252016; color: #c9a84c; }
+        .mobile-nav-btn img { width: 22px; height: 22px; opacity: 0.5; }
+        .mobile-nav-btn.active img { opacity: 1; }
+
+        /* ── Mobile: drawer do editor ───────────────────── */
+        #mobile-editor-drawer {
+            position: fixed; bottom: 0; left: 0; right: 0; z-index: 50;
+            background: #1a160f; border-top: 2px solid #c9a84c;
+            max-height: 85vh; overflow-y: auto;
+            transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+            padding-bottom: max(16px, env(safe-area-inset-bottom));
+        }
+        #mobile-editor-drawer:not(.translate-y-full) { transform: translateY(0); }
+
+        /* ── Confirm Dialog ─────────────────────────────── */
+        #confirm-overlay {
+            position: fixed; inset: 0; z-index: 100;
+            background: rgba(10,8,4,0.85); align-items: center; justify-content: center;
+            padding: 20px;
+        }
+        #confirm-overlay:not(.hidden) { display: flex; }
+
+        /* ── Badges de adorno ──────────────────────────── */
+        .deco-badge {
+            display: inline-flex; align-items: center; gap: 2px;
+            font-family: 'Cinzel', serif; font-weight: 900;
+            border-radius: 3px; padding: 2px 5px;
+            transition: all 0.15s; font-size: 13px; line-height: 1;
+        }
+        .deco-filled {
+            background: rgba(0,191,255,.12); border: 1px solid rgba(0,191,255,.5);
+            cursor: pointer;
+        }
+        .deco-filled:hover { background: rgba(0,191,255,.22); border-color: #00bfff; }
+        .deco-empty  { background: rgba(74,65,47,.18); border: 1px solid #3a3320; }
+        /* número do slot — preto/escuro */
+        .deco-slot-num {
+            color: #3a3020; font-size: 12px; font-weight: 700;
+            font-family: 'Cinzel', serif; line-height: 1;
+        }
+        .deco-slot-empty { color: #4a412f; }
+        /* separador | */
+        .deco-sep { color: #3a3020; font-size: 11px; line-height: 1; margin: 0 1px; }
+        /* número da joia — azul brilhante */
+        .deco-joia-num {
+            color: #38bdf8; font-size: 12px; font-weight: 900;
+            font-family: 'Cinzel', serif; line-height: 1;
+            text-shadow: 0 0 4px rgba(56,189,248,.65);
+        }
+
+        /* ── Modais de Habilidade e Jóia ────────────────── */
+        .mhw-modal {
+            position: fixed; inset: 0; z-index: 200;
+            background: rgba(10,8,4,0.88);
+            display: flex; align-items: center; justify-content: center;
+            padding: 20px;
+        }
+        .mhw-modal:not(.hidden) { display: flex; }
+        .mhw-modal.hidden { display: none; }
+        .mhw-modal-box {
+            background: #1e1a10; border: 1px solid #c9a84c;
+            border-radius: 8px; max-width: 560px; width: 100%;
+            max-height: 85vh; overflow-y: auto;
+            box-shadow: 0 0 40px rgba(201,168,76,.2);
+        }
+        .mhw-modal-header {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            padding: 20px 24px 14px; border-bottom: 1px solid #4a412f;
+            position: sticky; top: 0; background: #1e1a10; z-index: 1;
+        }
+        .mhw-modal-body { padding: 20px 24px; }
+        .modal-close-btn {
+            background: none; border: none; color: #6b5e43;
+            font-size: 22px; cursor: pointer; line-height: 1; padding: 2px 6px;
+            font-weight: 900; transition: color 0.2s; flex-shrink: 0;
+        }
+        .modal-close-btn:hover { color: #e84040; }
+
+        /* ── Slot cards ─────────────────────────────────── */
+        .slot-card { min-height: 80px; }
+        @media (max-width: 1023px) { .slot-card { cursor: pointer; } }
+
+        /* ── Estoque de adornos ─────────────────────────── */
+        .jewel-stock-card { min-height: 110px; }
+
+        /* ── Barra de habilidade estilo MHW ─────────────── */
+        .skill-bar { display: flex; align-items: center; gap: 2px; margin-top: 7px; flex-wrap: wrap; }
+        .skill-bar-sep { width: 5px; height: 12px; background: transparent; flex-shrink: 0; }
+        .skill-pip {
+            width: 15px; height: 11px; border-radius: 2px; flex-shrink: 0;
+            border: 1px solid #3a3320; background: #252016;
+            transition: background 0.15s, border-color 0.15s;
+        }
+        .pip-active { background: #c9a84c; border-color: #e8d5a3; box-shadow: 0 0 4px rgba(201,168,76,.5); }
+        .pip-maxed  { background: #e8d5a3; border-color: #c9a84c; box-shadow: 0 0 6px rgba(232,213,163,.7); }
+        .pip-empty  { background: #252016; border-color: #3a3320; }
+
+        /* ── Modal nível ativo ──────────────────────────── */
+        .modal-lv-active-num  { color: #e8d5a3 !important; text-shadow: 0 0 8px rgba(232,213,163,.6); }
+        .modal-lv-active-text { color: #ffffff !important; }
+        .modal-lv-active-dot  { color: #c9a84c !important; text-shadow: 0 0 6px rgba(201,168,76,.8); }
+
+        /* ── Animação de entrada ────────────────────────── */
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-up { animation: fadeUp 0.3s ease both; }
+    </style>
+</head>
+<body class="antialiased">
+
+<!-- ══════════════════════════════════════════════════════════
+     CONFIRM DIALOG CUSTOMIZADO
+══════════════════════════════════════════════════════════ -->
+<div id="confirm-overlay" class="hidden">
+    <div class="bg-[#252016] border border-[#c9a84c] rounded-lg p-7 max-w-sm w-full shadow-2xl">
+        <p id="confirm-msg" class="font-cinzel text-[#e8d5a3] text-[14px] text-center leading-relaxed mb-7"></p>
+        <div class="flex gap-4">
+            <button id="confirm-cancel" class="nav-btn flex-1 h-[44px]">Cancelar</button>
+            <button id="confirm-ok"     class="nav-btn flex-1 h-[44px] !border-[#e84040] !text-[#e84040] hover:bg-[#e84040] hover:!text-white">Confirmar</button>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     HEADER
+══════════════════════════════════════════════════════════ -->
+<header class="header-ice py-4 px-4 md:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 mb-4 md:mb-8 shadow-xl max-w-[1600px] mx-auto rounded-b-lg">
+    <div class="flex flex-col items-center sm:items-start gap-0.5">
+        <span class="logo-sub text-[13px]">Monster Hunter World: Iceborne</span>
+        <span class="logo-title">Hunter <span>Lab Brasil</span></span>
+    </div>
+    <!-- Botões de nav visíveis só em desktop -->
+    <div class="hidden lg:flex gap-3">
+        <button onclick="switchView('build')" id="btn-view-build" class="nav-btn active h-[42px]">⚔️ Forja</button>
+        <button onclick="switchView('bau')"   id="btn-view-bau"   class="nav-btn h-[42px]">🎒 Baú</button>
+        <button onclick="switchView('admin')" id="btn-view-admin" class="nav-btn h-[42px]">⚒️ Ferreiro</button>
+    </div>
+</header>
+
+<!-- ══════════════════════════════════════════════════════════
+     VIEW BUILD
+══════════════════════════════════════════════════════════ -->
+<main id="view-build" class="max-w-[1600px] mx-auto px-3 md:px-4">
+
+    <!-- Grade principal: 3 colunas em desktop, 1 em mobile -->
+    <div class="grid grid-cols-1 lg:grid-cols-[380px_1fr_360px] border border-[#4a412f] bg-[#1a160f] min-h-[600px] shadow-2xl rounded-lg overflow-hidden">
+
+        <!-- ── Coluna 1: Lista de Equipamentos ── -->
+        <section class="border-b lg:border-b-0 lg:border-r border-[#4a412f] p-5 md:p-7 bg-[#1a160f]">
+            <div class="panel-title mb-5 text-sm">Equipamento</div>
+            <div id="armor-list" class="flex flex-col gap-3"></div>
+        </section>
+
+        <!-- ── Coluna 2: Editor Central ── -->
+        <section class="p-5 md:p-7 flex flex-col bg-[#1a160f]">
+
+            <!-- Editor (oculto em mobile — fica no drawer) -->
+            <div id="editor-panel" class="hidden lg:block bg-[#252016] border border-[#6b5e43] p-6 mb-6 rounded-lg shadow-inner">
+                <div id="editor-empty" class="flex flex-col items-center justify-center text-[#c9b07a] italic py-16 uppercase font-black text-[14px] tracking-[2px] font-cinzel">
+                    <p class="text-4xl mb-4 opacity-40">⚒️</p>
+                    <p>Selecione uma peça na lateral</p>
+                </div>
+                <div id="editor-content" class="hidden">
+                    <div id="editor-header" class="mb-5 border-b border-[#4a412f] pb-5"></div>
+                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                        <div id="editor-slots"></div>
+                        <div id="editor-info" class="xl:border-l xl:border-[#4a412f] xl:pl-6 h-fit"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="divider-gold my-5 lg:mt-0"></div>
+
+            <!-- Stats de ataque e defesa -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-6">
+                <div>
+                    <h3 class="font-cinzel text-[12px] font-bold text-[#d9b85c] uppercase tracking-[2px] mb-3">Status do Ataque</h3>
+                    <div id="offense-display" class="space-y-2.5"></div>
+                </div>
+                <div>
+                    <h3 class="font-cinzel text-[12px] font-bold text-[#d9b85c] uppercase tracking-[2px] mb-3">Status da Defesa</h3>
+                    <div id="defense-display" class="space-y-2.5"></div>
+                    <div id="resist-display" class="grid grid-cols-5 gap-2 mt-3"></div>
+                </div>
+            </div>
+
+            <!-- Presets + Exportar -->
+            <div class="mt-auto border-t border-[#4a412f] pt-5" data-html2canvas-ignore>
+                <div class="flex flex-wrap xl:flex-nowrap items-center gap-3">
+
+                    <div id="load-preset-container" class="items-center gap-2 w-full sm:w-auto flex-1 hidden">
+                        <select id="preset-selector" class="flex-1 min-w-[130px] truncate h-[42px] !py-0"></select>
+                        <button onclick="loadPreset()"   class="nav-btn h-[42px] flex-shrink-0">Carregar</button>
+                        <button onclick="deletePreset()" class="nav-btn h-[42px] flex-shrink-0 !px-3 !text-[#e84040] !border-[#e84040] hover:bg-[#e84040] hover:!text-white" title="Excluir Build">✖</button>
+                    </div>
+
+                    <div id="preset-divider" class="hidden xl:block w-px h-8 bg-[#4a412f] flex-shrink-0"></div>
+
+                    <div class="flex items-center gap-2 w-full sm:w-auto flex-1">
+                        <input type="text" id="preset-name" placeholder="Nome da Build" class="flex-1 text-center font-bold min-w-[120px] h-[42px]">
+                        <button onclick="savePreset()" class="nav-btn h-[42px] !text-[#e8d5a3] !border-[#e8d5a3] active flex-shrink-0">Salvar</button>
+                    </div>
+
+                    <div class="hidden xl:block w-px h-8 bg-[#4a412f] flex-shrink-0"></div>
+
+                    <button onclick="clearAllGear()" class="nav-btn h-[42px] !text-[#e84040] !border-[#e84040]/60 hover:bg-[#e84040] hover:!text-white w-full xl:w-auto flex-shrink-0">✖ Desequipar Tudo</button>
+                    <button onclick="exportBuildImage()" class="nav-btn h-[42px] !text-[#70b0e0] !border-[#70b0e0] hover:bg-[#70b0e0] hover:!text-[#0d0b08] w-full xl:w-auto flex-shrink-0">📷 Exportar</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── Coluna 3: Habilidades ── -->
+        <section class="border-t lg:border-t-0 lg:border-l border-[#4a412f] p-5 md:p-7 flex flex-col bg-[#1a160f]">
+            <div class="panel-title mb-5 text-sm">Habilidades Ativas</div>
+            <div id="active-set-bonuses" class="flex flex-wrap gap-2 mb-4 min-h-[28px]"></div>
+            <div id="skill-display" class="flex flex-col gap-3 overflow-y-auto max-h-[560px] lg:max-h-none pr-2 flex-1"></div>
+        </section>
+    </div>
+</main>
+
+<!-- ══════════════════════════════════════════════════════════
+     VIEW BAÚ
+══════════════════════════════════════════════════════════ -->
+<main id="view-bau" class="hidden max-w-[1600px] mx-auto px-3 md:px-4 pb-6">
+
+    <!-- 1. Adornos -->
+    <div class="bg-[#1a160f] border border-[#4a412f] px-5 py-5 md:px-7 shadow-2xl rounded-lg mb-4">
+        <div class="panel-title mb-5">Adornos</div>
+        <div id="jewel-stock-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3"></div>
+    </div>
+
+    <!-- 2. Amuletos -->
+    <div class="bg-[#1a160f] p-5 border border-[#4a412f] shadow-xl rounded-lg mb-4">
+        <div class="panel-title mb-4">Amuletos</div>
+        <div id="bau-list-charm" class="flex flex-col gap-6 mt-2"></div>
+    </div>
+
+    <!-- 3. Armas -->
+    <div class="bg-[#1a160f] p-5 border border-[#4a412f] shadow-xl rounded-lg mb-4">
+        <div class="panel-title mb-4">Armas</div>
+        <div id="bau-list-weapon" class="flex flex-col gap-6 mt-2"></div>
+    </div>
+
+    <!-- 4. Armaduras -->
+    <div class="bg-[#1a160f] p-5 border border-[#4a412f] shadow-xl rounded-lg mb-4">
+        <div class="panel-title mb-4">Armaduras</div>
+        <div id="bau-list-armor" class="flex flex-col gap-6 mt-2"></div>
+    </div>
+
+    <!-- Resetar -->
+    <div class="flex justify-end pt-2 pb-4">
+        <button onclick="resetSave()" class="nav-btn h-[44px] !border-[#e84040] !text-[#e84040] hover:bg-[#e84040] hover:!text-white">🗑️ Resetar Sistema</button>
+    </div>
+</main>
+
+<!-- IDs de compatibilidade — ocultos -->
+<div class="hidden" aria-hidden="true">
+    <div id="build-jewel-stock"></div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     MOBILE: EDITOR DRAWER
+══════════════════════════════════════════════════════════ -->
+<div id="mobile-editor-drawer" class="translate-y-full lg:hidden">
+    <div class="flex items-center justify-between px-5 pt-4 pb-3 border-b border-[#4a412f] sticky top-0 bg-[#1a160f] z-10">
+        <span class="font-cinzel font-bold text-[#c9b07a] uppercase text-[14px] tracking-[2px]">Editar Peça</span>
+        <button onclick="closeMobileEditor()" class="text-[#c9b07a] hover:text-white font-black text-xl px-2">✕</button>
+    </div>
+    <div class="p-5">
+        <div id="editor-empty-m" class="flex flex-col items-center text-[#c9b07a] italic py-10 font-cinzel text-[14px] tracking-[2px] uppercase">
+            <p class="text-3xl mb-3 opacity-40">⚒️</p><p>Selecione uma peça</p>
+        </div>
+        <!-- Reutilizamos os mesmos IDs do editor desktop via JS ao abrir drawer -->
+        <div id="mobile-editor-body"></div>
+    </div>
+</div>
+<div id="mobile-drawer-overlay" class="fixed inset-0 bg-black/60 z-40 hidden lg:hidden" onclick="closeMobileEditor()"></div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     VIEW ADMIN (LABORATÓRIO)
+══════════════════════════════════════════════════════════ -->
+<main id="view-admin" class="hidden max-w-[1600px] mx-auto px-3 md:px-4 pb-6">
+
+    <!-- ── Formulários (3 colunas desktop, 1 mobile) ── -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-8">
+
+        <!-- Formulário de Arma -->
+        <div class="bg-[#1a160f] p-6 border border-[#4a412f] shadow-xl flex flex-col rounded-lg" id="form-weapon">
+            <div class="panel-title mb-6 text-[#70b0e0] !text-[13px]" id="title-weapon"><span id="icon-weapon-form"></span><span>Forjar Arma</span></div>
+            <div class="grid grid-cols-2 gap-x-5 gap-y-4 flex-1">
+                <div class="col-span-2 flex gap-3 items-end">
+                    <div class="flex-1"><label>Nome da Arma</label><input type="text" id="adm-w-name" class="h-[42px]"></div>
+                    <div class="w-[95px] shrink-0">
+                        <label>Raridade</label>
+                        <select id="adm-w-rar" onchange="updateRarityColor(this)" class="text-center font-black rarity-1 h-[42px] bg-[#252016]">
+                            <option value="1"  class="rarity-1 bg-[#252016]">♦ 1</option><option value="2"  class="rarity-2 bg-[#252016]">♦ 2</option>
+                            <option value="3"  class="rarity-3 bg-[#252016]">♦ 3</option><option value="4"  class="rarity-4 bg-[#252016]">♦ 4</option>
+                            <option value="5"  class="rarity-5 bg-[#252016]">♦ 5</option><option value="6"  class="rarity-6 bg-[#252016]">♦ 6</option>
+                            <option value="7"  class="rarity-7 bg-[#252016]">♦ 7</option><option value="8"  class="rarity-8 bg-[#252016]">♦ 8</option>
+                            <option value="9"  class="rarity-9 bg-[#252016]">♦ 9</option><option value="10" class="rarity-10 bg-[#252016]">♦ 10</option>
+                            <option value="11" class="rarity-11 bg-[#252016]">♦ 11</option><option value="12" class="rarity-12 bg-[#252016]">♦ 12</option>
+                        </select>
+                    </div>
+                </div>
+                <div><label>Ataque</label><input type="number" id="adm-w-atk" class="h-[42px]"></div>
+                <div><label>Afinidade (%)</label><input type="number" id="adm-w-aff" class="h-[42px]"></div>
+                <div><label>Elemento</label>
+                    <select id="adm-w-el-type" class="h-[42px]">
+                        <option value="Nenhum">Nenhum</option><option value="Fogo">🔥 Fogo</option>
+                        <option value="Água">💧 Água</option><option value="Raio">⚡ Raio</option>
+                        <option value="Gelo">❄️ Gelo</option><option value="Dragão">🐉 Dragão</option>
+                        <option value="Veneno">☠️ Veneno</option><option value="Sono">💤 Sono</option>
+                        <option value="Paralisia">⚡ Paralisia</option><option value="Explosão">💥 Explosão</option>
+                    </select>
+                </div>
+                <div><label>Val. Elemental</label><input type="number" id="adm-w-el-val" class="h-[42px]"></div>
+                <div class="col-span-2 grid grid-cols-3 gap-2">
+                    <div><label>Slot 1</label><select id="adm-w-slot-1" class="h-[42px]"></select></div>
+                    <div><label>Slot 2</label><select id="adm-w-slot-2" class="h-[42px]"></select></div>
+                    <div><label>Slot 3</label><select id="adm-w-slot-3" class="h-[42px]"></select></div>
+                </div>
+                <div><label>Selo Ancião</label>
+                    <select id="adm-w-elder" class="h-[42px]">
+                        <option value="Nenhum">Nenhum</option><option value="Baixo">Baixo</option>
+                        <option value="Médio">Médio</option><option value="Alto">Alto</option>
+                    </select>
+                </div>
+                <div><label>Bônus Defesa</label><input type="number" id="adm-w-def" class="h-[42px]"></div>
+                <div class="col-span-2">
+                    <label>🗡️ Afiação</label>
+                    <div class="flex w-full h-[42px] border border-[#2a1f0d] bg-[#100e08] rounded" id="sharpness-selector">
+                        <button type="button" onclick="setSharp('Nenhuma')" id="btn-sharp-Nenhuma" class="flex-1 bg-slate-700 transition-opacity rounded-l" title="Nenhuma"></button>
+                        <button type="button" onclick="setSharp('Vermelha')" id="btn-sharp-Vermelha" class="flex-1 bg-[#e84040] opacity-40 hover:opacity-80 transition-opacity"></button>
+                        <button type="button" onclick="setSharp('Laranja')"  id="btn-sharp-Laranja"  class="flex-1 bg-[#e89040] opacity-40 hover:opacity-80 transition-opacity"></button>
+                        <button type="button" onclick="setSharp('Amarela')"  id="btn-sharp-Amarela"  class="flex-1 bg-[#e8e040] opacity-40 hover:opacity-80 transition-opacity"></button>
+                        <button type="button" onclick="setSharp('Verde')"    id="btn-sharp-Verde"    class="flex-1 bg-[#60d060] opacity-40 hover:opacity-80 transition-opacity"></button>
+                        <button type="button" onclick="setSharp('Azul')"     id="btn-sharp-Azul"     class="flex-1 bg-[#4090f0] opacity-40 hover:opacity-80 transition-opacity"></button>
+                        <button type="button" onclick="setSharp('Branca')"   id="btn-sharp-Branca"   class="flex-1 bg-[#f0f8ff] opacity-40 hover:opacity-80 transition-opacity"></button>
+                        <button type="button" onclick="setSharp('Roxa')"     id="btn-sharp-Roxa"     class="flex-1 bg-[#c090e0] opacity-40 hover:opacity-80 transition-opacity rounded-r"></button>
+                    </div>
+                    <input type="hidden" id="adm-w-sharp" value="Nenhuma">
+                </div>
+                <div class="col-span-2 border-t border-[#4a412f] pt-4 mt-1"></div>
+                <div class="col-span-2"><label>🌟 Habilidade Especial</label><select id="adm-w-special-sk" class="h-[42px]"></select></div>
+            </div>
+            <div class="flex flex-col mt-auto pt-5 gap-2.5">
+                <button id="btn-save-weapon" onclick="adminSaveWeapon()" class="nav-btn h-[42px] !w-full !border-[#70b0e0] !text-[#70b0e0] hover:bg-[#70b0e0] hover:!text-[#0d0b08]">Registrar Arma</button>
+                <button id="btn-cancel-weapon" onclick="cancelEditWeapon()" class="nav-btn h-[42px] !w-full hidden">Cancelar</button>
+            </div>
+        </div>
+
+        <!-- Formulário de Armadura -->
+        <div class="bg-[#1a160f] p-6 border border-[#4a412f] shadow-xl flex flex-col rounded-lg" id="form-armor">
+            <div class="panel-title mb-6 text-[#e8d5a3] !text-[13px]" id="title-armor"><span id="icon-armor-form"></span><span>Forjar Armadura</span></div>
+            <div class="grid grid-cols-2 gap-x-5 gap-y-4 flex-1">
+                <div class="col-span-2 flex gap-3 items-end">
+                    <div class="flex-1"><label>Nome da Peça</label><input type="text" id="adm-a-name" class="h-[42px]"></div>
+                    <div class="w-[95px] shrink-0">
+                        <label>Raridade</label>
+                        <select id="adm-a-rar" onchange="updateRarityColor(this)" class="text-center font-black rarity-1 h-[42px] bg-[#252016]">
+                            <option value="1"  class="rarity-1 bg-[#252016]">♦ 1</option><option value="2"  class="rarity-2 bg-[#252016]">♦ 2</option>
+                            <option value="3"  class="rarity-3 bg-[#252016]">♦ 3</option><option value="4"  class="rarity-4 bg-[#252016]">♦ 4</option>
+                            <option value="5"  class="rarity-5 bg-[#252016]">♦ 5</option><option value="6"  class="rarity-6 bg-[#252016]">♦ 6</option>
+                            <option value="7"  class="rarity-7 bg-[#252016]">♦ 7</option><option value="8"  class="rarity-8 bg-[#252016]">♦ 8</option>
+                            <option value="9"  class="rarity-9 bg-[#252016]">♦ 9</option><option value="10" class="rarity-10 bg-[#252016]">♦ 10</option>
+                            <option value="11" class="rarity-11 bg-[#252016]">♦ 11</option><option value="12" class="rarity-12 bg-[#252016]">♦ 12</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-span-2"><label>Categoria</label><select id="adm-a-cat" onchange="updateArmorIconTitle()" class="h-[42px]"><option value="head">Cabeça</option><option value="chest" selected>Torso</option><option value="arms">Braços</option><option value="waist">Cintura</option><option value="legs">Pernas</option></select></div>
+                <div><label>Defesa</label><input type="number" id="adm-a-def" class="h-[42px]"></div>
+                <div><label>Set (Bônus)</label><select id="adm-a-set" class="h-[42px]"></select></div>
+                <div class="col-span-2 grid grid-cols-3 gap-2">
+                    <div><label>Slot 1</label><select id="adm-a-slot-1" class="h-[42px]"></select></div>
+                    <div><label>Slot 2</label><select id="adm-a-slot-2" class="h-[42px]"></select></div>
+                    <div><label>Slot 3</label><select id="adm-a-slot-3" class="h-[42px]"></select></div>
+                </div>
+                <!-- Resistências -->
+                <div class="col-span-2 grid grid-cols-5 gap-1.5 pt-1">
+                    <div><label class="text-[10px] text-center mb-1 text-[#e06030]">🔥</label><input type="number" id="adm-a-res-0" class="text-center h-[36px]" placeholder="0"></div>
+                    <div><label class="text-[10px] text-center mb-1 text-[#70b0e0]">💧</label><input type="number" id="adm-a-res-1" class="text-center h-[36px]" placeholder="0"></div>
+                    <div><label class="text-[10px] text-center mb-1 text-[#facc15]">⚡</label><input type="number" id="adm-a-res-2" class="text-center h-[36px]" placeholder="0"></div>
+                    <div><label class="text-[10px] text-center mb-1 text-[#e0f2fe]">❄️</label><input type="number" id="adm-a-res-3" class="text-center h-[36px]" placeholder="0"></div>
+                    <div><label class="text-[10px] text-center mb-1 text-[#9060c0]">🐉</label><input type="number" id="adm-a-res-4" class="text-center h-[36px]" placeholder="0"></div>
+                </div>
+                <!-- FIX: 3 habilidades por peça -->
+                <div class="col-span-2 border-t border-[#4a412f] pt-3 mt-1">
+                    <label class="text-[10px] text-[#c9b07a] mb-2">Habilidades (até 3)</label>
+                </div>
+                <div class="col-span-2 grid grid-cols-[1fr_80px] gap-2 items-end">
+                    <div><label class="invisible text-[9px]">·</label><select id="adm-a-sk1-n" class="h-[40px]"></select></div>
+                    <div><label class="text-[9px]">Nível</label><select id="adm-a-sk1-v" class="h-[40px]"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+                </div>
+                <div class="col-span-2 grid grid-cols-[1fr_80px] gap-2 items-end">
+                    <div><select id="adm-a-sk2-n" class="h-[40px]"></select></div>
+                    <div><select id="adm-a-sk2-v" class="h-[40px]"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+                </div>
+                <div class="col-span-2 grid grid-cols-[1fr_80px] gap-2 items-end">
+                    <div><select id="adm-a-sk3-n" class="h-[40px]"></select></div>
+                    <div><select id="adm-a-sk3-v" class="h-[40px]"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+                </div>
+            </div>
+            <div class="flex flex-col mt-auto pt-5 gap-2.5">
+                <button id="btn-save-armor" onclick="adminSaveArmor()" class="nav-btn h-[42px] !w-full !border-[#e8d5a3] !text-[#e8d5a3] hover:bg-[#e8d5a3] hover:!text-[#0d0b08]">Registrar Armadura</button>
+                <button id="btn-cancel-armor" onclick="cancelEditArmor()" class="nav-btn h-[42px] !w-full hidden">Cancelar</button>
+            </div>
+        </div>
+
+        <!-- Formulário de Adorno/Amuleto -->
+        <div class="bg-[#1a160f] p-6 border border-[#4a412f] shadow-xl flex flex-col rounded-lg" id="form-jewel">
+            <div class="panel-title mb-6 text-[#c090e0] !text-[13px]" id="title-acc">Cadastrar Adorno</div>
+            <div class="grid grid-cols-1 gap-y-4 flex-1">
+                <div><label>Tipo de Item</label>
+                    <select id="adm-j-type" onchange="toggleAccType()" class="text-[#c090e0] font-black h-[42px]">
+                        <option value="decorations">💠 Adorno</option>
+                        <option value="charms">📿 Amuleto</option>
+                    </select>
+                </div>
+                <div><label>Nome do Item</label><input type="text" id="adm-j-n" class="h-[42px]"></div>
+                <div id="form-adorno-fields" class="flex gap-3">
+                    <div class="w-28"><label>Nível</label><select id="adm-j-s" class="h-[42px]"></select></div>
+                    <div class="w-24"><label>Qtd. Baú</label><input type="number" id="adm-j-qtd" placeholder="1" class="h-[42px]"></div>
+                </div>
+                <div id="form-amuleto-fields" class="hidden">
+                    <label>Raridade</label>
+                    <select id="adm-j-rar" onchange="updateRarityColor(this)" class="text-center font-black rarity-1 h-[42px] bg-[#252016] w-[100px]">
+                        <option value="1" class="rarity-1 bg-[#252016]">♦ 1</option><option value="2" class="rarity-2 bg-[#252016]">♦ 2</option>
+                        <option value="3" class="rarity-3 bg-[#252016]">♦ 3</option><option value="4" class="rarity-4 bg-[#252016]">♦ 4</option>
+                        <option value="5" class="rarity-5 bg-[#252016]">♦ 5</option><option value="6" class="rarity-6 bg-[#252016]">♦ 6</option>
+                        <option value="7" class="rarity-7 bg-[#252016]">♦ 7</option><option value="8" class="rarity-8 bg-[#252016]">♦ 8</option>
+                        <option value="9" class="rarity-9 bg-[#252016]">♦ 9</option><option value="10" class="rarity-10 bg-[#252016]">♦ 10</option>
+                        <option value="11" class="rarity-11 bg-[#252016]">♦ 11</option><option value="12" class="rarity-12 bg-[#252016]">♦ 12</option>
+                    </select>
+                </div>
+                <div class="border-t border-[#4a412f] pt-3"></div>
+                <div class="grid grid-cols-[1fr_80px] gap-2 items-end">
+                    <div><label>Habilidade 1</label><select id="adm-j-sk1" class="h-[40px]"></select></div>
+                    <div><label>Pontos</label><select id="adm-j-v1" class="h-[40px]"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+                </div>
+                <div class="grid grid-cols-[1fr_80px] gap-2 items-end">
+                    <div><label>Habilidade 2 (opcional)</label><select id="adm-j-sk2" class="h-[40px]"></select></div>
+                    <div><label>Pontos</label><select id="adm-j-v2" class="h-[40px]"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+                </div>
+            </div>
+            <div class="flex flex-col mt-auto pt-5 gap-2.5">
+                <button id="btn-save-jewel" onclick="adminSaveJewel()" class="nav-btn h-[42px] !w-full !border-[#c090e0] !text-[#c090e0] hover:bg-[#c090e0] hover:!text-[#1a160f]">Adicionar ao Baú</button>
+                <button id="btn-cancel-jewel" onclick="cancelEditJewel()" class="nav-btn h-[42px] !w-full hidden">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Os baús estão na aba Baú. IDs ocultos para compatibilidade JS -->
+    <div class="hidden" aria-hidden="true">
+        <div id="admin-list-equip"></div>
+        <div id="admin-list-decorations"></div>
+    </div>
+
+</main>
+
+<!-- ══════════════════════════════════════════════════════════
+     MOBILE BOTTOM NAV
+══════════════════════════════════════════════════════════ -->
+<nav class="mobile-nav lg:hidden">
+    <div id="mnav-build" class="mobile-nav-btn active" onclick="mobileNav('build')">
+        <span>Forja</span>
+    </div>
+    <div id="mnav-bau" class="mobile-nav-btn" onclick="mobileNav('bau')">
+        <span>Baú</span>
+    </div>
+    <div id="mnav-admin" class="mobile-nav-btn" onclick="mobileNav('admin')">
+        <span>Ferreiro</span>
+    </div>
+</nav>
+
+<script>
+// Mobile nav helper
+function mobileNav(view){
+    switchView(view);
+    document.getElementById('mnav-build').classList.toggle('active', view==='build');
+    document.getElementById('mnav-bau').classList.toggle('active',   view==='bau');
+    document.getElementById('mnav-admin').classList.toggle('active', view==='admin');
+}
+
+// Mobile: ao clicar em um slot, abre o drawer com o conteúdo do editor
+(function patchOpenEditor(){
+    const _orig = ()=>{};
+    document.addEventListener('DOMContentLoaded', ()=>{
+        // Patch slot-cards para abrir drawer no mobile
+        document.getElementById('armor-list').addEventListener('click', e=>{
+            if(window.innerWidth>=1024) return; // desktop usa editor inline
+            const card=e.target.closest('[onclick]');
+            if(card){
+                const match=card.getAttribute('onclick').match(/openEditor\('(.+?)'\)/);
+                if(match){
+                    openEditor(match[1]);
+                    // Clona conteúdo do editor para o drawer
+                    const src=document.getElementById('editor-content');
+                    const dst=document.getElementById('mobile-editor-body');
+                    if(src&&dst){
+                        dst.innerHTML=src.innerHTML;
+                        // Re-bind selects de adornos clonados
+                        dst.querySelectorAll('select[onchange]').forEach(sel=>{
+                            const fn=sel.getAttribute('onchange');
+                            sel.onchange=()=>eval(fn.replace('this',`document.querySelector('#mobile-editor-body select[onchange="${fn.replace(/"/g,"'")}"]')`));
+                        });
+                    }
+                    document.getElementById('mobile-drawer-overlay').classList.remove('hidden');
+                    openMobileEditor(match[1]);
+                    e.stopPropagation();
+                }
+            }
+        });
+    });
+})();
+
+// Ao fechar drawer também esconde overlay
+const _closeMob=window.closeMobileEditor;
+window.closeMobileEditor=function(){
+    if(_closeMob) _closeMob();
+    document.getElementById('mobile-drawer-overlay').classList.add('hidden');
+};
+</script>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     MODAL DE ITEM (arma / armadura / amuleto)
+══════════════════════════════════════════════════════════ -->
+<div id="gear-modal" class="mhw-modal hidden">
+    <div class="mhw-modal-box">
+        <div class="mhw-modal-header">
+            <div class="flex items-center gap-3">
+                <span id="gear-modal-icon"></span>
+                <div>
+                    <h2 id="gear-modal-title" class="font-cinzel font-bold text-[20px] text-[#e8d5a3] leading-tight"></h2>
+                    <p  id="gear-modal-sub"   class="text-[13px] font-cinzel mt-0.5 uppercase tracking-widest"></p>
+                </div>
+            </div>
+            <button class="modal-close-btn" onclick="closeGearModal()">✕</button>
+        </div>
+        <div class="mhw-modal-body">
+            <div id="gear-modal-rows"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     MODAL DE HABILIDADE
+══════════════════════════════════════════════════════════ -->
+<div id="skill-modal" class="mhw-modal hidden">
+    <div class="mhw-modal-box">
+        <div class="mhw-modal-header">
+            <div>
+                <h2 id="skill-modal-title" class="font-cinzel font-bold text-[22px] text-[#e8d5a3] leading-tight"></h2>
+                <p id="skill-modal-cur" class="text-[13px] font-cinzel text-[#60d060] mt-1 uppercase tracking-widest"></p>
+                <p id="skill-modal-max" class="text-[11px] font-cinzel text-[#6b5e43] mt-0.5 uppercase tracking-widest"></p>
+            </div>
+            <button class="modal-close-btn" onclick="closeSkillModal()">✕</button>
+        </div>
+        <div class="mhw-modal-body">
+            <p id="skill-modal-desc" class="text-[18px] font-crimson text-[#c9b07a] italic mb-5 leading-relaxed border-b border-[#4a412f] pb-5"></p>
+            <div id="skill-modal-levels" class="space-y-1"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     MODAL DE JÓIA
+══════════════════════════════════════════════════════════ -->
+<div id="jewel-modal" class="mhw-modal hidden">
+    <div class="mhw-modal-box">
+        <div class="mhw-modal-header">
+            <div>
+                <h2 id="jewel-modal-title" class="font-cinzel font-bold text-[20px] text-[#e8d5a3] leading-tight"></h2>
+                <div class="flex items-center gap-3 mt-1">
+                    <span id="jewel-modal-slot" class="text-[13px] font-cinzel text-[#00bfff] tracking-widest" style="text-shadow:0 0 4px rgba(0,191,255,.6)"></span>
+                    <span class="text-[#4a412f]">·</span>
+                    <span id="jewel-modal-stock" class="text-[12px] font-cinzel text-[#c9b07a] uppercase tracking-widest"></span>
+                </div>
+            </div>
+            <button class="modal-close-btn" onclick="closeJewelModal()">✕</button>
+        </div>
+        <div class="mhw-modal-body">
+            <p class="text-[14px] font-cinzel text-[#c9b07a] uppercase tracking-[2px] mb-4">Habilidades</p>
+            <div id="jewel-modal-skills" class="space-y-3"></div>
+            <p class="text-[13px] font-cinzel text-[#6b5e43] mt-4 italic">Clique numa habilidade para ver os detalhes e níveis.</p>
+        </div>
+    </div>
+</div>
+
+<script src="dados.js"></script>
+<script src="motor.js"></script>
+
+<!-- Banner instalar app -->
+<div id="pwa-banner" class="hidden fixed bottom-20 lg:bottom-6 left-4 right-4 z-[70] max-w-sm mx-auto bg-[#252016] border border-[#c9a84c] rounded-xl shadow-2xl p-4 flex items-center gap-4">
+    <div class="flex-shrink-0 w-12 h-12 bg-[#1a160f] rounded-lg flex items-center justify-center border border-[#4a412f]">
+        <img src="icons/icon-192.png" alt="App" class="w-10 h-10 rounded-md">
+    </div>
+    <div class="flex-1 min-w-0">
+        <p class="font-cinzel font-bold text-[#e8d5a3] text-[13px] leading-tight">Instalar Hunter Lab</p>
+        <p class="font-crimson text-[#8a7a5a] text-[13px] mt-0.5">Adicionar à tela inicial</p>
+    </div>
+    <div class="flex flex-col gap-1.5 flex-shrink-0">
+        <button id="pwa-install-btn" class="nav-btn h-[34px] !text-[#c9a84c] !border-[#c9a84c] hover:bg-[#c9a84c] hover:!text-[#1a160f] text-[12px] px-3">Instalar</button>
+        <button id="pwa-dismiss-btn" class="text-[#6b5e43] hover:text-[#e84040] text-[11px] font-cinzel uppercase tracking-widest text-center">Agora não</button>
+    </div>
+</div>
+
+<script>
+// ── PWA Service Worker ────────────────────────────────────
+if('serviceWorker' in navigator){
+    window.addEventListener('load', ()=>{
+        navigator.serviceWorker.register('./sw.js').catch(()=>{});
+    });
+}
+
+// ── Prompt de instalação ──────────────────────────────────
+let _pwaPrompt = null;
+window.addEventListener('beforeinstallprompt', e=>{
+    e.preventDefault();
+    _pwaPrompt = e;
+    const banner = document.getElementById('pwa-banner');
+    if(banner && !localStorage.getItem('pwa-dismissed')) {
+        setTimeout(()=>banner.classList.remove('hidden'), 2000);
+    }
+});
+document.getElementById('pwa-install-btn').addEventListener('click', ()=>{
+    if(!_pwaPrompt) return;
+    _pwaPrompt.prompt();
+    _pwaPrompt.userChoice.then(()=>{
+        document.getElementById('pwa-banner').classList.add('hidden');
+        _pwaPrompt = null;
+    });
+});
+document.getElementById('pwa-dismiss-btn').addEventListener('click', ()=>{
+    document.getElementById('pwa-banner').classList.add('hidden');
+    localStorage.setItem('pwa-dismissed','1');
+});
+window.addEventListener('appinstalled', ()=>{
+    document.getElementById('pwa-banner').classList.add('hidden');
+});
+</script>
+</body>
+</html>
