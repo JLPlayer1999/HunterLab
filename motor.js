@@ -22,57 +22,81 @@ const elementIcons = {
 };
 // ── Cores por raridade (aplicadas diretamente nos SVGs) ──────
 const rarityColors = {
-    1:'#9ca3af', 2:'#f1f5f9', 3:'#a3e635', 4:'#22c55e',
-    5:'#38bdf8', 6:'#3b82f6', 7:'#a855f7', 8:'#f97316',
-    9:'#fb7185', 10:'#2dd4bf', 11:'#facc15', 12:'#cffafe'
+    1:'#9ca3af',  // cinza — R1
+    2:'#e2e8f0',  // branco acinzentado — R2
+    3:'#86efac',  // verde claro — R3
+    4:'#4ade80',  // verde — R4
+    5:'#fbbf24',  // âmbar/dourado — R5 (Iceborne base)
+    6:'#f97316',  // laranja — R6
+    7:'#ef4444',  // vermelho — R7
+    8:'#c084fc',  // roxo claro — R8
+    9:'#60a5fa',  // azul — R9
+    10:'#34d399', // esmeralda — R10
+    11:'#e8d5a3', // ouro/dourado claro — R11
+    12:'#cffafe'  // ciano gelo — R12 (Iceborne master)
 };
 function getRarityColor(r){ return rarityColors[r||1]||rarityColors[1]; }
 
 // ── SVG icons nativos — sem fundo, cor pela raridade ────────
 const SVG_ICONS = {
 
-// ÍCONE PADRÃO — losango facetado (mesma linguagem do adorno, neutro para armaduras/arma)
-_default: (c,s)=>`<svg width="${s}" height="${s}" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <path d="M22 3 L41 22 L22 41 L3 22 Z" fill="${c}" fill-opacity=".12" stroke="${c}" stroke-width="1.8"/>
-  <path d="M22 3 L41 22 L22 24 L3 22 Z" fill="${c}" fill-opacity=".35"/>
-  <path d="M3 22 L22 24 L22 41 Z"       fill="${c}" fill-opacity=".18"/>
-  <path d="M41 22 L22 24 L22 41 Z"      fill="${c}" fill-opacity=".24"/>
-  <line x1="3" y1="22" x2="41" y2="22" stroke="${c}" stroke-width="1" opacity=".3"/>
+// ARMA — losango rotacionado 45° (ponta pra cima e baixo = forma de lâmina)
+weapon: (c,s)=>`<svg width="${s}" height="${s}" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M22 2 L40 22 L22 42 L4 22 Z" fill="${c}" fill-opacity=".12" stroke="${c}" stroke-width="1.8"/>
+  <path d="M22 2 L40 22 L22 16 Z" fill="${c}" fill-opacity=".42"/>
+  <path d="M4 22 L22 16 L22 42 Z" fill="${c}" fill-opacity=".20"/>
+  <path d="M40 22 L22 16 L22 42 Z" fill="${c}" fill-opacity=".28"/>
+  <line x1="4" y1="22" x2="40" y2="22" stroke="${c}" stroke-width="1" opacity=".28"/>
+  <line x1="22" y1="2" x2="22" y2="42" stroke="${c}" stroke-width="1" opacity=".20"/>
 </svg>`,
 
-// ADORNO — diamante facetado original (mantido, estava bom)
-decorations: (c,s)=>`<svg width="${s}" height="${s}" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <path d="M22 3 L36 12 L40 24 L36 36 L22 42 L8 36 L4 24 L8 12 Z"
-    fill="${c}" fill-opacity=".14" stroke="${c}" stroke-width="2"/>
-  <path d="M22 3 L36 12 L22 20 L8 12 Z"   fill="${c}" fill-opacity=".35"/>
-  <path d="M8 12 L22 20 L8 36 L4 24 Z"    fill="${c}" fill-opacity=".22"/>
-  <path d="M36 12 L40 24 L36 36 L22 20 Z" fill="${c}" fill-opacity=".28"/>
-  <path d="M8 36 L22 20 L36 36 L22 42 Z"  fill="${c}" fill-opacity=".12"/>
-  <line x1="4" y1="24" x2="40" y2="24" stroke="${c}" stroke-width="1" opacity=".35"/>
-  <polygon points="12,44 18,38 24,44" fill="${c}" fill-opacity=".75"/>
-  <polygon points="22,44 28,38 34,44" fill="${c}" fill-opacity=".5"/>
+// ARMADURA — octógono facetado com viewBox maior para parecer menor visualmente
+_default: (c,s)=>`<svg width="${s}" height="${s}" viewBox="-5 -5 54 54" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M14 3 L30 3 L41 14 L41 30 L30 41 L14 41 L3 30 L3 14 Z"
+    fill="${c}" fill-opacity=".12" stroke="${c}" stroke-width="1.8"/>
+  <path d="M14 3 L30 3 L22 22 Z" fill="${c}" fill-opacity=".42"/>
+  <path d="M3 14 L14 3 L22 22 Z" fill="${c}" fill-opacity=".22"/>
+  <path d="M41 14 L30 3 L22 22 Z" fill="${c}" fill-opacity=".30"/>
+  <path d="M3 30 L3 14 L22 22 Z" fill="${c}" fill-opacity=".16"/>
+  <path d="M41 30 L41 14 L22 22 Z" fill="${c}" fill-opacity=".22"/>
+  <path d="M14 41 L3 30 L22 22 Z" fill="${c}" fill-opacity=".20"/>
+  <path d="M30 41 L41 30 L22 22 Z" fill="${c}" fill-opacity=".26"/>
+  <path d="M14 41 L30 41 L22 22 Z" fill="${c}" fill-opacity=".14"/>
 </svg>`,
 
-// AMULETO — hexágono facetado (menor que o adorno, forma distinta)
-charm: (c,s)=>`<svg width="${s}" height="${s}" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <path d="M22 4 L36 13 L36 31 L22 40 L8 31 L8 13 Z"
+// ADORNO — diamante facetado (viewBox 0 0 44 40 para cortar triangulos e equalizar tamanho visual)
+decorations: (c,s)=>`<svg width="${s}" height="${s}" viewBox="0 0 44 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M22 2 L36 11 L40 22 L36 33 L22 39 L8 33 L4 22 L8 11 Z"
     fill="${c}" fill-opacity=".14" stroke="${c}" stroke-width="2"/>
-  <path d="M22 4 L36 13 L22 22 L8 13 Z"   fill="${c}" fill-opacity=".40"/>
-  <path d="M8 13 L22 22 L8 31 Z"           fill="${c}" fill-opacity=".20"/>
-  <path d="M36 13 L22 22 L36 31 Z"         fill="${c}" fill-opacity=".26"/>
-  <path d="M8 31 L22 22 L36 31 L22 40 Z"   fill="${c}" fill-opacity=".12"/>
-  <line x1="8" y1="22" x2="36" y2="22" stroke="${c}" stroke-width="1" opacity=".30"/>
+  <path d="M22 2 L36 11 L22 19 L8 11 Z"   fill="${c}" fill-opacity=".35"/>
+  <path d="M8 11 L22 19 L8 33 L4 22 Z"    fill="${c}" fill-opacity=".22"/>
+  <path d="M36 11 L40 22 L36 33 L22 19 Z" fill="${c}" fill-opacity=".28"/>
+  <path d="M8 33 L22 19 L36 33 L22 39 Z"  fill="${c}" fill-opacity=".12"/>
+  <line x1="4" y1="22" x2="40" y2="22" stroke="${c}" stroke-width="1" opacity=".30"/>
+  <polygon points="13,40 19,35 25,40" fill="${c}" fill-opacity=".75"/>
+  <polygon points="21,40 27,35 33,40" fill="${c}" fill-opacity=".50"/>
+</svg>`,
+
+// AMULETO — hexágono facetado (viewBox 0 0 44 40 para equalizar visualmente)
+charm: (c,s)=>`<svg width="${s}" height="${s}" viewBox="0 0 44 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M22 3 L36 11 L36 29 L22 37 L8 29 L8 11 Z"
+    fill="${c}" fill-opacity=".14" stroke="${c}" stroke-width="2"/>
+  <path d="M22 3 L36 11 L22 20 L8 11 Z"  fill="${c}" fill-opacity=".40"/>
+  <path d="M8 11 L22 20 L8 29 Z"          fill="${c}" fill-opacity=".20"/>
+  <path d="M36 11 L22 20 L36 29 Z"        fill="${c}" fill-opacity=".26"/>
+  <path d="M8 29 L22 20 L36 29 L22 37 Z"  fill="${c}" fill-opacity=".12"/>
+  <line x1="8" y1="20" x2="36" y2="20" stroke="${c}" stroke-width="1" opacity=".28"/>
 </svg>`,
 
 };
 
-// Todos os slots de equipamento usam _default; adorno e amuleto têm forma própria
+// weapon e _default (armaduras) são formas distintas; decorations e charm têm formas próprias
 
 // Renderiza ícone SVG nativo com cor da raridade
 function getIcon(slot, size, rarity) {
     size = size || 44;
     var c = rarity ? getRarityColor(rarity) : '#c9a84c';
-    // decorations e charm têm forma própria; tudo mais usa losango padrão
+    // weapon e decorations e charm têm formas próprias; armaduras usam _default (octógono)
     var fn = SVG_ICONS[slot] || SVG_ICONS['_default'];
     return '<span style="display:inline-flex;flex-shrink:0;align-items:center;justify-content:center;width:' + size + 'px;height:' + size + 'px;" class="equip-icon-svg">' + fn(c, size) + '</span>';
 }
@@ -158,6 +182,110 @@ function showJewelModal(jewelId) {
     document.getElementById('jewel-modal').classList.remove('hidden');
 }
 
+function showGearModal(slot) {
+    const it = build[slot] ? build[slot].data : null;
+    if(!it || it.name==='---' || it.n==='---') return;
+    const nm = it.name||it.n;
+    const rar = it.rarity||1;
+    const rClass = getRarityColor(rar);
+
+    let rows = '';
+    if(slot==='weapon'){
+        if(it.atk)        rows += gearRow('Ataque', it.atk);
+        if(it.aff)        rows += gearRow('Afinidade', it.aff+'%');
+        if(it.sharpness && it.sharpness!=='Nenhuma') rows += gearRow('Afiação', it.sharpness);
+        if(it.element && it.element!=='Nenhum') rows += gearRow('Elemento', it.element+' '+(it.elementVal||''));
+        if(it.elderseal && it.elderseal!=='Nenhum') rows += gearRow('Selo Ancião', it.elderseal);
+        if(it.def)        rows += gearRow('Bônus Defesa', '+'+it.def);
+        if(it.specialSkill && it.specialSkill!=='') rows += gearRow('Habilidade Especial', it.specialSkill);
+    } else if(slot==='charm'){
+        if(it.rarity)     rows += gearRow('Raridade', 'R'+rar);
+        const sks = Object.keys(it.skills||{});
+        sks.forEach(sk=>rows += gearRow(sk, 'Nv '+it.skills[sk]));
+    } else {
+        // armadura
+        if(it.def)        rows += gearRow('Defesa', it.def);
+        if(it.res){
+            const rIcons=['🔥','💧','⚡','❄️','🐉'];
+            const rNames=['Fogo','Água','Raio','Gelo','Dragão'];
+            it.res.forEach((v,i)=>{ if(v!==0) rows+=gearRow(rIcons[i]+' '+rNames[i], (v>0?'+':'')+v); });
+        }
+        const sks = Object.keys(it.skills||{});
+        sks.forEach(sk=>rows += gearRow(sk, 'Nv '+it.skills[sk]));
+        if(it.set && it.set!=='Nenhum') rows += gearRow('Set', it.set);
+    }
+
+    // Slots + joias equipadas
+    const joias = build[slot].joias||[];
+    if(it.slots && it.slots.length>0){
+        const slotsHtml = it.slots.map((s,idx)=>{
+            const filled = joias[idx];
+            if(filled) return gearRow('Slot '+s, filled.n+' (Nv '+filled.s+')');
+            return gearRow('Slot '+s, '— livre —');
+        }).join('');
+        rows += slotsHtml;
+    }
+
+    document.getElementById('gear-modal-icon').innerHTML  = getIcon(slot, 40, rar);
+    document.getElementById('gear-modal-title').textContent = nm;
+    document.getElementById('gear-modal-sub').textContent   = locs[slot]+' · ♦ R'+rar;
+    document.getElementById('gear-modal-sub').style.color   = rClass;
+    document.getElementById('gear-modal-rows').innerHTML    = rows||'<p class="text-[#6b5e43] italic text-[14px]">Sem informações cadastradas.</p>';
+    document.getElementById('gear-modal').classList.remove('hidden');
+}
+function showItemModal(id, type, catId){
+    let it = null;
+    if(type==='weapon')       it = DB.weapons.find(i=>i.id===id);
+    else if(type==='charms')  it = DB.charms.find(i=>i.id===id);
+    else if(type==='decorations') it = DB.decorations.find(i=>i.id===id);
+    else                      it = DB.armors[catId]&&DB.armors[catId].find(i=>i.id===id);
+    if(!it) return;
+
+    const nm = it.name||it.n||'';
+    const rar = it.rarity||1;
+    let rows = '';
+
+    if(type==='weapon'){
+        if(it.atk)  rows += gearRow('Ataque', it.atk);
+        if(it.aff)  rows += gearRow('Afinidade', it.aff+'%');
+        if(it.sharpness&&it.sharpness!=='Nenhuma') rows += gearRow('Afiação', it.sharpness);
+        if(it.element&&it.element!=='Nenhum') rows += gearRow('Elemento', it.element+' '+(it.elementVal||''));
+        if(it.elderseal&&it.elderseal!=='Nenhum') rows += gearRow('Selo Ancião', it.elderseal);
+        if(it.def)  rows += gearRow('Bônus Defesa', '+'+it.def);
+        if(it.specialSkill&&it.specialSkill!=='') rows += gearRow('Hab. Especial', it.specialSkill);
+        if(it.slots&&it.slots.length) rows += gearRow('Slots', it.slots.join(' · ')||'—');
+    } else if(type==='charms'){
+        Object.keys(it.skills||{}).forEach(sk=>rows+=gearRow(sk,'Nv '+it.skills[sk]));
+    } else if(type==='decorations'){
+        rows += gearRow('Slot', it.s);
+        rows += gearRow('Quantidade', it.qtd!==undefined?it.qtd:1);
+        Object.keys(it.skills||{}).forEach(sk=>rows+=gearRow(sk,'+'+it.skills[sk]));
+    } else {
+        if(it.def) rows += gearRow('Defesa', it.def);
+        const rIcons=['🔥','💧','⚡','❄️','🐉'], rNames=['Fogo','Água','Raio','Gelo','Dragão'];
+        (it.res||[]).forEach((v,i)=>{ if(v!==0) rows+=gearRow(rIcons[i]+' '+rNames[i],(v>0?'+':'')+v); });
+        Object.keys(it.skills||{}).forEach(sk=>rows+=gearRow(sk,'Nv '+it.skills[sk]));
+        if(it.set&&it.set!=='Nenhum') rows+=gearRow('Set',it.set);
+        if(it.slots&&it.slots.length) rows+=gearRow('Slots',it.slots.join(' · ')||'—');
+    }
+
+    const iconSlot = type==='weapon'?'weapon':type==='charms'?'charm':type==='decorations'?'decorations':catId;
+    document.getElementById('gear-modal-icon').innerHTML   = getIcon(iconSlot,40,rar);
+    document.getElementById('gear-modal-title').textContent = nm;
+    document.getElementById('gear-modal-sub').textContent   = (locs[iconSlot]||type)+' · ♦ R'+rar;
+    document.getElementById('gear-modal-sub').style.color   = getRarityColor(rar);
+    document.getElementById('gear-modal-rows').innerHTML    = rows||'<p class="text-[#6b5e43] italic text-[14px]">Sem informações.</p>';
+    document.getElementById('gear-modal').classList.remove('hidden');
+}
+
+function gearRow(label, value){
+    return `<div class="flex justify-between items-baseline py-2 border-b border-[#3a3020] last:border-0 gap-4">
+        <span class="font-cinzel text-[13px] text-[#8a7a5a] uppercase tracking-wide flex-shrink-0">${label}</span>
+        <span class="font-crimson text-[16px] text-[#e8d5a3] text-right">${value}</span>
+    </div>`;
+}
+function closeGearModal() { document.getElementById('gear-modal').classList.add('hidden'); }
+
 function closeSkillModal()  { document.getElementById('skill-modal').classList.add('hidden'); }
 function closeJewelModal()  { document.getElementById('jewel-modal').classList.add('hidden'); }
 
@@ -165,8 +293,10 @@ function closeJewelModal()  { document.getElementById('jewel-modal').classList.a
 document.addEventListener('click', function(e) {
     const sm = document.getElementById('skill-modal');
     const jm = document.getElementById('jewel-modal');
+    const gm = document.getElementById('gear-modal');
     if(sm && !sm.classList.contains('hidden') && e.target === sm) closeSkillModal();
     if(jm && !jm.classList.contains('hidden') && e.target === jm) closeJewelModal();
+    if(gm && !gm.classList.contains('hidden') && e.target === gm) closeGearModal();
 });
 
 
@@ -220,6 +350,21 @@ function load(){
 
 // FIX: Exportação completa — inclui masterSets, setBonuses, specialSkills, maxSkills
 // exportData e importData removidos — dados salvos automaticamente
+
+// Desequipar tudo — limpa build e joias
+async function clearAllGear(){
+    const ok = await confirmDialog('Desequipar todos os equipamentos e joias?');
+    if(!ok) return;
+    ALL_SLOTS.forEach(slot=>{
+        build[slot].data  = getList(slot)[0];
+        build[slot].joias = [];
+    });
+    currentActiveSlot = null;
+    save(); renderArmorList(); updateAllStats(); renderJewelStock();
+    document.getElementById('editor-empty').classList.remove('hidden');
+    document.getElementById('editor-content').classList.add('hidden');
+    toast('Build limpa!');
+}
 
 async function resetSave(){
     const ok = await confirmDialog('Apagar tudo e resetar o Laboratório? Isso perderá TODAS as armas, armaduras e builds salvas!');
@@ -360,22 +505,23 @@ function renderArmorList(){
 
         let decosHtml='';
         if(!isEmpty && item.slots && item.slots.length>0){
-            decosHtml=`<div class="flex flex-wrap gap-2 mt-2.5">`+item.slots.map((s,idx)=>{
+            decosHtml=`<div class="flex flex-wrap gap-1.5 mt-2.5">`+item.slots.map((s,idx)=>{
                 const filled = build[slot].joias && build[slot].joias[idx];
                 return filled
                     ? `<div class="deco-badge deco-filled" title="${filled.n}" onclick="event.stopPropagation();showJewelModal('${filled.id}')">
-                           <span class="deco-gem deco-gem--filled">♦${filled.s}</span>
-                           <span class="deco-lv deco-lv--filled">${filled.n.length>12?filled.n.substring(0,11)+'…':filled.n}</span>
+                           ${s===filled.s
+                             ? `<span class="deco-joia-num">${s}</span>`
+                             : `<span class="deco-slot-num">${s}</span><span class="deco-sep">|</span><span class="deco-joia-num">${filled.s}</span>`
+                           }
                        </div>`
                     : `<div class="deco-badge deco-empty">
-                           <span class="deco-gem deco-gem--empty">♦${s}</span>
-                           <span class="deco-lv">livre</span>
+                           <span class="deco-slot-num deco-slot-empty">${s}</span>
                        </div>`;
             }).join('')+`</div>`;
         }
 
         return `<div onclick="openEditor('${slot}')" class="slot-card flex items-center gap-3 p-4 bg-[#252016] border border-[#4a412f] cursor-pointer hover:border-[#e8d5a3] transition-all rounded shadow-md group ${isEmpty?'':'border-l-4 !border-l-[#c9a84c]'}">
-            ${getIcon(slot,48,item.rarity)}
+            ${getIcon(slot,40,item.rarity)}
             <div class="flex-1 overflow-hidden min-w-0">
                 <div class="text-[12px] uppercase tracking-[2px] text-[#c9b07a] font-cinzel font-bold flex items-center flex-wrap leading-none">
                     ${locs[slot]}${rarityBadge}
@@ -404,7 +550,7 @@ function openEditor(slot){
     document.getElementById('editor-header').innerHTML=`
     <div class="flex flex-col mb-4">
         <h2 class="flex items-center gap-3 text-2xl font-cinzel font-bold uppercase ${isEmpty?'text-[#8a6e3a]':`rarity-${item.rarity}`} leading-none drop-shadow-md">
-            ${getIcon(slot,46,item.rarity)}
+            ${getIcon(slot,40,item.rarity)}
             ${isEmpty?'Vazio':dispName}
         </h2>
         ${!isEmpty&&item.rarity?`<span class="inline-block mt-2 text-[13px] font-bold font-cinzel ${getRarityClass(item.rarity)}">♦ Raridade ${item.rarity}</span>`:''}
@@ -520,16 +666,16 @@ function renderJewelStock(){
         const slotLabel=`<span class="inline-flex items-center gap-1 text-[#00bfff] font-cinzel font-bold text-[14px]" style="text-shadow:0 0 4px rgba(0,191,255,.5)">♦ Slot ${j.s}</span>`;
         const qtdLabel=`<span class="text-[#6b5e43] font-cinzel text-[13px]">× ${j.qtd!==undefined?j.qtd:1}</span>`;
         return `
-        <div class="jewel-stock-card flex gap-3 p-3.5 bg-[#252016] border border-[#4a412f] rounded-lg shadow-md hover:border-[#00bfff]/40 transition group">
+        <div class="jewel-stock-card flex gap-3 p-3.5 bg-[#252016] border border-[#4a412f] rounded-lg shadow-md hover:border-[#00bfff]/40 transition group cursor-pointer" onclick="showJewelModal('${j.id}')">
             <div class="flex-shrink-0 flex flex-col items-center justify-between gap-2">
-                ${getIcon('decorations',42)}
-                <div class="flex gap-1">
+                ${getIcon('decorations',36)}
+                <div class="flex gap-1" onclick="event.stopPropagation()">
                     <button onclick="changeJewelQtd('${j.id}',-1)" class="w-7 h-7 bg-[#3d3423] hover:bg-[#e84040] border border-[#6b5e43] hover:border-[#e84040] text-[#e8d5a3] font-black text-base flex items-center justify-center transition rounded leading-none" title="Remover 1">-</button>
                     <button onclick="changeJewelQtd('${j.id}',1)"  class="w-7 h-7 bg-[#3d3423] hover:bg-[#60d060] border border-[#6b5e43] hover:border-[#60d060] text-[#e8d5a3] font-black text-base flex items-center justify-center transition rounded leading-none" title="Adicionar 1">+</button>
                 </div>
             </div>
             <div class="flex flex-col flex-1 min-w-0 overflow-hidden gap-0.5">
-                <span class="text-[15px] font-bold text-[#e8d5a3] line-clamp-2 leading-tight font-crimson cursor-pointer hover:text-[#c9a84c]" onclick="showJewelModal('${j.id}')">${j.n}</span>
+                <span class="text-[15px] font-bold text-[#e8d5a3] line-clamp-2 leading-tight font-crimson">${j.n}</span>
                 <div class="flex items-center gap-2 mt-0.5">${slotLabel}${qtdLabel}</div>
                 <div class="mt-1">${skillLines}</div>
                 <div class="mt-auto pt-2 border-t border-[#3a3020] flex items-center justify-between gap-2">
@@ -537,9 +683,9 @@ function renderJewelStock(){
                         <span class="font-cinzel text-[12px] text-[#6b5e43] uppercase tracking-widest">Disp. </span>
                         <span class="font-cinzel font-bold text-[16px] leading-none ${avail>0?'text-[#60d060]':'text-[#e84040]'}">${avail}</span>
                     </div>
-                    <div class="flex gap-1.5">
-                        <button onclick="editFromBau(function(){loadEditJewel('${j.id}')})" class="nav-btn h-[28px] !text-[11px] !px-2 !text-[#c9a84c] !border-[#c9a84c]/50 hover:bg-[#c9a84c] hover:!text-[#1a160f]" title="Editar">✎ Editar</button>
-                        <button onclick="deleteItem('decorations','${j.id}')" class="nav-btn h-[28px] !text-[11px] !px-2 !text-[#e84040] !border-[#e84040]/40 hover:bg-[#e84040] hover:!text-white" title="Remover">✖</button>
+                    <div class="flex gap-1.5" onclick="event.stopPropagation()">
+                        <button onclick="editFromBau(function(){loadEditJewel('${j.id}')})" class="nav-btn h-[28px] !text-[11px] !px-2 !text-[#c9a84c] !border-[#c9a84c]/50 hover:bg-[#c9a84c] hover:!text-[#1a160f]">✎ Editar</button>
+                        <button onclick="deleteItem('decorations','${j.id}')" class="nav-btn h-[28px] !text-[11px] !px-2 !text-[#e84040] !border-[#e84040]/40 hover:bg-[#e84040] hover:!text-white">✖</button>
                     </div>
                 </div>
             </div>
@@ -633,14 +779,19 @@ function updateAllStats(){
     let resTotal=[0,0,0,0,0], skills={}, sets={}, defTotal=0;
     let weaponElementHtml='', weaponSharpnessHtml='';
 
+    // breakdown detalhado por peça
+    let defBreakdown=[], resBreakdown=[[],[],[],[],[]];
+
     ALL_SLOTS.forEach(slot=>{
         const it=build[slot].data;
         if(!it||it.name==='---'||it.n==='---') return;
+        const label=locs[slot]||slot;
+        const nm=it.name||it.n;
 
         if(slot==='weapon'){
             atkBase=it.atk||0; affBase=it.aff||0;
             defWeapon=it.def||0; defTotal+=it.def||0;
-            // FIX: specialSkill com nível configurável (usa maxSkills se disponível)
+            if(it.def) defBreakdown.push({label:'Arma',name:nm,val:it.def,cls:'text-[#c9b07a]'});
             if(it.specialSkill&&it.specialSkill!==''){
                 skills[it.specialSkill]=(skills[it.specialSkill]||0)+1;
             }
@@ -654,8 +805,8 @@ function updateAllStats(){
                         <span class="${eColor} font-cinzel font-bold text-lg leading-none">${icon} ${it.element} ${it.elementVal||''}</span>
                     </div>
                     <div class="stat-breakdown hidden" id="breakdown-ele">
-                        <div class="flex justify-between"><span>Base:</span><span class="text-white">${it.elementVal||0}</span></div>
-                        ${it.elderseal&&it.elderseal!=='Nenhum'?`<div class="flex justify-between"><span>Selo:</span><span class="${elementColors['Dragão']}">${it.elderseal}</span></div>`:''}
+                        <div class="flex justify-between"><span class="text-[#c9b07a]">Arma:</span><span class="text-white">${it.elementVal||0}</span></div>
+                        ${it.elderseal&&it.elderseal!=='Nenhum'?`<div class="flex justify-between"><span>Selo Ancião:</span><span class="${elementColors['Dragão']}">${it.elderseal}</span></div>`:''}
                     </div>
                 </div>`;
             }
@@ -667,13 +818,14 @@ function updateAllStats(){
                         <div class="w-14 h-3 ${sharpColors[it.sharpness]} border border-[#3d3423] rounded-sm shadow-inner"></div>
                     </div>
                     <div class="stat-breakdown hidden" id="breakdown-shp">
-                        <div class="flex justify-between"><span>Cor:</span><span class="text-white capitalize">${it.sharpness}</span></div>
+                        <div class="flex justify-between"><span class="text-[#c9b07a]">Arma:</span><span class="text-white capitalize">${it.sharpness}</span></div>
                     </div>
                 </div>`;
             }
         } else if(slot!=='charm'){
             defBaseArmor+=it.def||0; defTotal+=it.def||0;
-            if(it.res) it.res.forEach((r,i)=>resTotal[i]+=r);
+            if(it.def) defBreakdown.push({label,name:nm,val:it.def,cls:'text-[#c9b07a]'});
+            if(it.res) it.res.forEach((r,i)=>{ resTotal[i]+=r; if(r!==0) resBreakdown[i].push({label,val:r}); });
             if(it.set&&it.set!=='Nenhum') sets[it.set]=(sets[it.set]||0)+1;
         }
 
@@ -700,8 +852,8 @@ function updateAllStats(){
                 <span class="text-[#e8d5a3] font-cinzel font-bold text-[20px] leading-none">${finalAtk}</span>
             </div>
             <div class="stat-breakdown hidden" id="breakdown-atk">
-                <div class="flex justify-between"><span>Base:</span><span class="text-[#c9b07a]">${atkBase}</span></div>
-                ${bonusAtk!==0?`<div class="flex justify-between"><span>Habilidades:</span><span class="${bonusAtk>0?'text-[#60d060]':'text-[#e84040]'}">${bonusAtk>0?'+'+bonusAtk:bonusAtk}</span></div>`:''}
+                <div class="flex justify-between"><span class="text-[#c9b07a]">Arma:</span><span class="text-[#e8d5a3]">${atkBase}</span></div>
+                ${bonusAtk!==0?`<div class="flex justify-between"><span class="text-[#c9b07a]">Reforço de Ataque:</span><span class="${bonusAtk>0?'text-[#60d060]':'text-[#e84040]'}">${bonusAtk>0?'+'+bonusAtk:bonusAtk}</span></div>`:''}
             </div>
         </div>
         ${weaponSharpnessHtml}
@@ -711,8 +863,8 @@ function updateAllStats(){
                 <span class="${affColor} font-cinzel font-bold text-[20px] leading-none">${finalAff}%</span>
             </div>
             <div class="stat-breakdown hidden" id="breakdown-aff">
-                <div class="flex justify-between"><span>Base:</span><span class="text-[#c9b07a]">${affBase}%</span></div>
-                ${bonusAff!==0?`<div class="flex justify-between"><span>Habilidades:</span><span class="${bonusAff>0?'text-[#60d060]':'text-[#e84040]'}">${bonusAff>0?'+'+bonusAff:bonusAff}%</span></div>`:''}
+                <div class="flex justify-between"><span class="text-[#c9b07a]">Arma:</span><span class="text-[#e8d5a3]">${affBase}%</span></div>
+                ${bonusAff!==0?`<div class="flex justify-between"><span class="text-[#c9b07a]">Olho Crítico:</span><span class="${bonusAff>0?'text-[#60d060]':'text-[#e84040]'}">${bonusAff>0?'+'+bonusAff:bonusAff}%</span></div>`:''}
             </div>
         </div>
         ${weaponElementHtml}`;
@@ -724,19 +876,23 @@ function updateAllStats(){
                 <span class="text-[#e8d5a3] font-cinzel font-bold text-[20px] leading-none">${finalDef}</span>
             </div>
             <div class="stat-breakdown hidden" id="breakdown-def">
-                <div class="flex justify-between"><span>Armadura:</span><span class="text-[#c9b07a]">${defBaseArmor}</span></div>
-                ${defWeapon!==0?`<div class="flex justify-between"><span>Arma:</span><span class="${defWeapon>0?'text-[#60d060]':'text-[#e84040]'}">${defWeapon>0?'+'+defWeapon:defWeapon}</span></div>`:''}
-                ${bonusDef!==0?`<div class="flex justify-between"><span>Habilidades:</span><span class="text-[#60d060]">+${bonusDef}</span></div>`:''}
+                ${defBreakdown.map(d=>`<div class="flex justify-between"><span class="text-[#c9b07a]">${d.label}:</span><span class="text-[#e8d5a3]">${d.val}</span></div>`).join('')}
+                ${bonusDef!==0?`<div class="flex justify-between"><span class="text-[#c9b07a]">Reforço de Defesa:</span><span class="text-[#60d060]">+${bonusDef}</span></div>`:''}
             </div>
         </div>`;
 
     const resIcons=['🔥','💧','⚡','❄️','🐉'];
+    const resNames=['Fogo','Água','Raio','Gelo','Dragão'];
     const resColors=['text-[#e06030]','text-[#70b0e0]','text-[#facc15]','text-[#e0f2fe]','text-[#9060c0]'];
-    document.getElementById('resist-display').innerHTML=resTotal.map((r,i)=>`
-        <div class="bg-[#252016] py-2.5 border border-[#6b5e43] text-center flex flex-col items-center justify-center rounded shadow-md">
+    document.getElementById('resist-display').innerHTML=resTotal.map((r,i)=>{
+        const bdId='breakdown-res-'+i;
+        const details=resBreakdown[i].map(d=>`<div class="flex justify-between text-[12px]"><span class="text-[#c9b07a]">${d.label}:</span><span class="${d.val<0?'text-[#e84040]':resColors[i]}">${d.val>0?'+'+d.val:d.val}</span></div>`).join('');
+        return `<div class="bg-[#252016] py-2.5 px-1 border border-[#6b5e43] text-center flex flex-col items-center justify-center rounded shadow-md cursor-pointer hover:border-[#e8d5a3] transition" onclick="toggleBreakdown('${bdId}')">
             <span class="text-[13px] font-cinzel font-bold ${resColors[i]} mb-1 leading-none">${resIcons[i]}</span>
             <span class="text-[16px] font-cinzel font-bold ${r<0?'text-[#e84040]':resColors[i]} leading-none mt-0.5">${r}</span>
-        </div>`).join('');
+            ${details?`<div class="stat-breakdown hidden text-left w-full px-1 mt-1" id="${bdId}">${details}</div>`:''}
+        </div>`;
+    }).join('');
 
     // Skills
     let skillsHtml=Object.keys(skills).sort().map(s=>{
@@ -811,12 +967,12 @@ function loadEditWeapon(id){
     editingWeaponId=id;
     document.getElementById('adm-w-name').value=it.name;
     const rarSel=document.getElementById('adm-w-rar'); rarSel.value=it.rarity||1; updateRarityColor(rarSel);
-    document.getElementById('adm-w-atk').value=it.atk||0;
-    document.getElementById('adm-w-aff').value=it.aff||0;
+    document.getElementById('adm-w-atk').value=it.atk||'';
+    document.getElementById('adm-w-aff').value=it.aff||'';
     document.getElementById('adm-w-el-type').value=it.element||'Nenhum';
     document.getElementById('adm-w-el-val').value=it.elementVal||'';
     document.getElementById('adm-w-elder').value=it.elderseal||'Nenhum';
-    document.getElementById('adm-w-def').value=it.def||0;
+    document.getElementById('adm-w-def').value=it.def||'';
     setSharp(it.sharpness||'Nenhuma');
     [1,2,3].forEach(i=>document.getElementById(`adm-w-slot-${i}`).value=it.slots[i-1]||0);
     document.getElementById('adm-w-special-sk').value=it.specialSkill||'';
@@ -877,7 +1033,7 @@ function loadEditArmor(cat, id){
     const r=document.getElementById('adm-a-rar'); r.value=it.rarity||1; updateRarityColor(r);
     updateArmorIconTitle();
     document.getElementById('adm-a-set').value=it.set||'Nenhum';
-    document.getElementById('adm-a-def').value=it.def||0;
+    document.getElementById('adm-a-def').value=it.def||'';
     it.res.forEach((rv,i)=>document.getElementById('adm-a-res-'+i).value=rv);
     [1,2,3].forEach(i=>document.getElementById(`adm-a-slot-${i}`).value=it.slots[i-1]||0);
     const sks=Object.keys(it.skills||{});
@@ -1016,46 +1172,50 @@ function renderAdminList(){
     ];
     const equipData   = weaponOnlyData; // mantém compatibilidade
     const decoData    = [...decoOnlyData,...charmOnlyData]; // mantém compatibilidade
-    const generateHtml=cols=>cols.map(col=>{
+    const makeItemHtml=(col,it)=>{
+        const rClass=col.type==='decorations'?'text-[#e8d5a3]':getRarityClass(it.rarity);
+        const extra =col.type==='decorations'||col.type==='charms'
+            ?Object.keys(it.skills||{}).map(k=>`${k} +${it.skills[k]}`).join(', '):'';
+        const editFnBase = col.type==='weapon' ? `loadEditWeapon('${it.id}')` : (col.type==='decorations'||col.type==='charms') ? `loadEditJewel('${it.id}')` : `loadEditArmor('${col.id}','${it.id}')`;
+        const editFn = `editFromBau(function(){${editFnBase}})`;
+        const isDeco = col.type==='decorations';
+        const rarBadge = `<span class="${getRarityClass(it.rarity)} font-cinzel font-bold text-[11px]">♦ R${it.rarity||1}</span>`;
+        const skillLines = extra ? extra.split(', ').map(s=>`<span class="text-[#8a7a56] font-crimson text-[13px] truncate block">${s}</span>`).join('') : '';
+        // slot para abrir modal de detalhes (não-deco usa slot do col)
+        const modalSlot = col.type==='weapon'?'weapon':col.type==='charms'?'charm':col.id;
+        // Simular um objeto temporário no modal via função inline
+        const openModalFn = `showItemModal('${it.id}','${col.type}','${col.id||col.type}')`;
+        return `<div class="flex gap-3 p-3.5 bg-[#252016] border border-[#4a412f] rounded-lg shadow-md hover:border-[#e8d5a3]/40 transition group cursor-pointer" onclick="${openModalFn}">
+            <div class="flex-shrink-0 flex flex-col items-center justify-between gap-2">
+                ${getIcon(col.iconSlot||col.id||col.type,36,it.rarity)}
+                <div class="flex gap-1" onclick="event.stopPropagation()">
+                    <button onclick="${editFn}" class="nav-btn h-[28px] !text-[11px] !px-2 !text-[#c9a84c] !border-[#c9a84c]/50 hover:bg-[#c9a84c] hover:!text-[#1a160f]">✎ Editar</button>
+                    <button onclick="deleteItem('${col.type}','${it.id}')" class="nav-btn h-[28px] !text-[11px] !px-2 !text-[#e84040] !border-[#e84040]/40 hover:bg-[#e84040] hover:!text-white">✖</button>
+                </div>
+            </div>
+            <div class="flex flex-col flex-1 min-w-0 overflow-hidden gap-0.5">
+                <span class="${rClass} text-[15px] font-bold font-crimson leading-tight line-clamp-2">${it.name||it.n}</span>
+                <div class="flex items-center gap-2 mt-0.5">${rarBadge}</div>
+                <div class="mt-1">${skillLines}</div>
+            </div>
+        </div>`;
+    };
+    // withHeader=true mostra sub-header de categoria (usado quando há múltiplas: armaduras)
+    // withHeader=false suprime o sub-header (armas e amuletos já têm título no painel do Baú)
+    const generateHtml=(cols,withHeader=true)=>cols.map(col=>{
         const filtered=col.items.filter(it=>it.id&&!it.id.toString().includes('_0'));
         if(!filtered.length) return '';
-        const itemsHtml=filtered.map(it=>{
-            const rClass=col.type==='decorations'?'text-[#e8d5a3]':getRarityClass(it.rarity);
-            const extra =col.type==='decorations'||col.type==='charms'
-                ?Object.keys(it.skills||{}).map(k=>`${k} +${it.skills[k]}`).join(', '):'';
-            const editFnBase = col.type==='weapon' ? `loadEditWeapon('${it.id}')` : (col.type==='decorations'||col.type==='charms') ? `loadEditJewel('${it.id}')` : `loadEditArmor('${col.id}','${it.id}')`;
-            const editFn = `editFromBau(function(){${editFnBase}})`;
-            // Para adornos: layout vertical mais limpo
-            const isDeco = col.type==='decorations';
-            const isChm  = col.type==='charms';
-            const slotBadge  = isDeco ? `<span class="inline-flex items-center gap-1 text-[#00bfff] font-cinzel font-bold text-[14px]" style="text-shadow:0 0 4px rgba(0,191,255,.5)">♦ Slot ${it.s}</span>` : '';
-            const qtdBadge   = isDeco ? `<span class="text-[#6b5e43] font-cinzel text-[13px]">× ${it.qtd!==undefined?it.qtd:1}</span>` : '';
-            const rarBadge   = !isDeco ? `<span class="${getRarityClass(it.rarity)} font-cinzel font-bold text-[11px]">♦ R${it.rarity||1}</span>` : '';
-            const skillLines = extra ? extra.split(', ').map(s=>`<span class="text-[#8a7a56] font-crimson text-[13px] truncate block">${s}</span>`).join('') : '';
-            return `
-            <div class="flex gap-2.5 p-3 bg-[#252016] border border-[#4a412f] hover:border-[#e8d5a3] group transition-all rounded shadow-md items-start">
-                <div class="flex-shrink-0 mt-0.5">${getIcon(col.iconSlot||col.id||col.type,38,it.rarity)}</div>
-                <div class="flex flex-col flex-1 overflow-hidden min-w-0 gap-0.5">
-                    <span class="${rClass} text-[15px] font-bold font-crimson group-hover:text-white leading-tight truncate" title="${it.name||it.n}">${it.name||it.n}</span>
-                    <div class="flex items-center gap-2 mt-0.5">${slotBadge}${qtdBadge}${rarBadge}</div>
-                    <div class="mt-1">${skillLines}</div>
-                    <div class="flex gap-2 mt-2">
-                        <button onclick="${editFn}" class="nav-btn h-[28px] !text-[11px] !px-2.5 !text-[#c9a84c] !border-[#c9a84c]/50 hover:bg-[#c9a84c] hover:!text-[#1a160f]">✎ Editar</button>
-                        <button onclick="deleteItem('${col.type}','${it.id}')" class="nav-btn h-[28px] !text-[11px] !px-2.5 !text-[#e84040] !border-[#e84040]/40 hover:bg-[#e84040] hover:!text-white">✖ Remover</button>
-                    </div>
-                </div>
-            </div>`;
-        }).join('');
-        return `
-        <div class="w-full bg-[#2a251b]/40 p-5 border border-[#4a412f] flex flex-col rounded-lg">
+        const itemsHtml=filtered.map(it=>makeItemHtml(col,it)).join('');
+        if(!withHeader) return `<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">${itemsHtml}</div>`;
+        return `<div class="w-full bg-[#2a251b]/40 p-5 border border-[#4a412f] flex flex-col rounded-lg">
             <p class="panel-title mb-4 !text-[13px]">${getIcon(col.iconSlot||col.id||col.type,30)}<span>${col.title}</span></p>
             <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">${itemsHtml}</div>
         </div>`;
     }).join('');
     const empty = '<p class="text-[#4a412f] italic text-[14px] text-center py-6 font-cinzel">Nenhum item cadastrado. Vá ao Ferreiro para forjar.</p>';
-    const charmHtml  = generateHtml(charmOnlyData)  || empty;
-    const weaponHtml = generateHtml(weaponOnlyData) || empty;
-    const armorHtml  = generateHtml(armorOnlyData)  || empty;
+    const charmHtml  = generateHtml(charmOnlyData, false)  || empty;
+    const weaponHtml = generateHtml(weaponOnlyData, false) || empty;
+    const armorHtml  = generateHtml(armorOnlyData, true)  || empty;
     // Ferreiro (IDs ocultos — compatibilidade)
     if(listEquip) listEquip.innerHTML = weaponHtml + armorHtml;
     if(listDeco)  listDeco.innerHTML  = charmHtml;
@@ -1075,12 +1235,19 @@ function exportBuildImage(){
     }
     const buildView   =document.getElementById('view-build');
     const skillDisplay=document.getElementById('skill-display');
+    const armorList   =document.getElementById('armor-list');
+    const mainGrid    =buildView&&buildView.querySelector('.grid');
     if(!buildView) return;
+    // Remover clipping temporariamente para captura completa
     const oldMaxH    =skillDisplay.style.maxHeight;
     const oldOverflow=skillDisplay.style.overflowY;
+    const oldGridH   =mainGrid?mainGrid.style.minHeight:'';
     skillDisplay.style.maxHeight ='none';
     skillDisplay.style.overflowY ='visible';
-    html2canvas(buildView,{backgroundColor:'#1a160f',scale:2,useCORS:true,allowTaint:true})
+    if(mainGrid) mainGrid.style.minHeight='auto';
+    if(armorList){ armorList.style.overflow='visible'; }
+    html2canvas(buildView,{backgroundColor:'#1a160f',scale:2,useCORS:true,allowTaint:true,
+        windowWidth:1400,windowHeight:buildView.scrollHeight+100})
     .then(canvas=>{
         const link=document.createElement('a');
         link.download='Minha_Build_MHW.png';
@@ -1093,6 +1260,8 @@ function exportBuildImage(){
     }).finally(()=>{
         skillDisplay.style.maxHeight =oldMaxH;
         skillDisplay.style.overflowY=oldOverflow;
+        if(mainGrid) mainGrid.style.minHeight=oldGridH;
+        if(armorList) armorList.style.overflow='';
     });
 }
 
